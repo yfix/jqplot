@@ -195,7 +195,7 @@
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
     // canvas related tests taken from modernizer:
-    // Copyright © 2009–2010 Faruk Ates.
+    // Copyright Â© 2009Ã±2010 Faruk Ates.
     // http://www.modernizr.com
     
     $.jqplot.support_canvas = function() {
@@ -270,6 +270,8 @@
         this._elem.addClass(klass);
         this._elem.css(cssopts);
         this._elem.attr(attrib);
+        // avoid memory leak;
+        elem = null;
         return this._elem;
     };
     
@@ -1283,6 +1285,8 @@
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -2068,6 +2072,10 @@
             var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
+            	// Couple of posts on Stack Overflow indicate that empty() doesn't
+	            // always cear up the dom and release memory.  Sometimes setting
+	            // innerHTML property to null is needed.  Particularly on IE, may 
+	            // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
             if (resetAxes) {
@@ -2093,6 +2101,10 @@
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
+            	// Couple of posts on Stack Overflow indicate that empty() doesn't
+	            // always cear up the dom and release memory.  Sometimes setting
+	            // innerHTML property to null is needed.  Particularly on IE, may 
+	            // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
              for (var ax in this.axes) {
