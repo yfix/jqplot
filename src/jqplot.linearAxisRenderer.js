@@ -48,6 +48,25 @@
 		// prop: breakTickLabel
 		// Label to use at the axis break if breakPoints are specified.
 		this.breakTickLabel = "&asymp;";
+        // prop: forceTickAt0
+        // This will ensure that there is always a tick mark at 0.
+        // If data range is strictly positive or negative,
+        // this will force 0 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 0.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt0 = false;
+        // prop: forceTickAt100
+        // This will ensure that there is always a tick mark at 100.
+        // If data range is strictly above or below 100,
+        // this will force 100 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 100.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt100 = false;
+        this._autoFormatString = '';
         $.extend(true, this, options);
 		if (this.breakPoints) {
 			if (!$.isArray(this.breakPoints)) {
@@ -277,6 +296,26 @@
 
             // Doing complete autoscaling
             if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
+                // Check if user must have tick at 0 or 100 and ensure they are in range.
+                // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
+                if (this.forceTickAt0) {
+                    if (min > 0) {
+                        min = 0;
+                    }
+                    if (max < 0) {
+                        max = 0;
+                    }
+                }
+
+                if (this.forceTickAt100) {
+                    if (min > 100) {
+                        min = 100;
+                    }
+                    if (max < 100) {
+                        max = 100;
+                    }
+                }
+
                 var ret = $.jqplot.LinearTickGenerator(min, max); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
@@ -293,6 +332,7 @@
                 this.min = ret[0];
                 this.max = ret[1];
                 this.numberTicks = ret[2];
+                this._autoFormatString = ret[3];
                 //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
                 this.tickInterval = ret[4];
             }
@@ -405,7 +445,7 @@
                         temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
                         this.tickInterval = Math.ceil(ti/temp) * temp;
                         this.max = this.tickInterval * ntmax;
-                        this.min = -this.tickInterval * ntmin;                  
+                        this.min = -this.tickInterval * ntmin;
                     }
                     
                     // if nothing else, do autoscaling which will try to line up ticks across axes.
@@ -553,6 +593,11 @@
                     }
                 }
                 
+            }
+            
+            if ((this.tickOptions == null || !this.tickOptions.formatString) && this._autoFormatString != '') {
+                this.tickOptions = this.tickOptions || {};
+                this.tickOptions.formatString = this._autoFormatString;
             }
 
             for (var i=0; i<this.numberTicks; i++){
