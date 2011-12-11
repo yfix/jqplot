@@ -1,28 +1,43 @@
-<?php 
-    $title = "Quintile Pyramid Charts";
-    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
-?>
-<?php include "opener.php"; ?>
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+    <title>Quintile Chart</title>
+
+    <link class="include" rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+    <link rel="stylesheet" type="text/css" href="examples.css" />
+    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
+    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
+  
+  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+    <script class="include" type="text/javascript" src="../src/jquery.js"></script>
+    
+   
+</head>
+<body>
 
 <!-- Example scripts go here -->
 
   <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
 
     <style type="text/css">
+        
+        body {
+            width: 98%;
+            height: 98%;
+            padding: 12px;
+        }
 
         .quintile-outer-container {
-            width: 900px;
-            margin-bottom: 25px;
+            width: 96%;
+            height: 96%;
+            margin: auto;
         }
 
         .jqplot-chart {
-            width: 500px;
-            height: 400px;
-        }
-
-        pre.code {
-            margin-top: 45px;
-            clear: both;
+            width: 800px;
+            height: 800px;
         }
 
         .quintile-toolbar .ui-icon {
@@ -68,7 +83,7 @@
 
         td.stats-cell {
             padding-left: 20px;
-            padding-top: 20px;
+            padding-top: 40px;
             vertical-align: top;
 
         }
@@ -82,13 +97,13 @@
             display: none;
             z-index: 11;
             position: fixed;
-            width: 588px;
+            width: 800px;
             left: 50%;
-            margin-left: -294px;
+            margin-left: -400px;
             background-color: white;
         }
 
-        div.overlay-chart-container .ui-icon {
+        div.overlay-chart-container div.ui-icon {
             float: right;
             margin: 3px 5px;
         }
@@ -133,14 +148,12 @@
 
     <div class="quintile-outer-container ui-widget ui-corner-all">
         <div class="quintile-toolbar ui-widget-header  ui-corner-top">
-            <span class="quintile-title">Income Level:  First Quintile</span>
-            <div class="quintile-toggle ui-icon ui-icon-arrowthickstop-1-n"></div>
-            <div class="ui-icon ui-icon-newwin"></div>
+            <span class="quintile-title">Income Level:</span>
         </div>
         <div class="quintile-content ui-widget-content ui-corner-bottom">
             <table class="quintile-display">
                 <tr>
-                    <td class="chart-cell" rowspan="2">
+                    <td class="chart-cell">
                         <div class="jqplot-chart"></div>
                     </td>
                     <td class="stats-cell">
@@ -183,7 +196,7 @@
                         </colgroup>
                         <tbody>
                             <tr class="tooltip-header">
-                                <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Range: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
+                                <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Age: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
                             </tr>
                             <tr>
                                 <td>Population, Male: </td>
@@ -201,11 +214,6 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
-                    <td class="contour-cell">
-                        <input name="showContour" type="checkbox" /> Use as overlay on other charts?
-                    </td>
-                </tr>
             </table>
         </div>
     </div> 
@@ -220,27 +228,25 @@
             $('div.quintile-toolbar').append('<div class="ui-icon ui-icon-image"></div><div class="ui-icon ui-icon-print"></div>');
         }
 
-        var quintHash = {0: 'First Quintile', 1: 'Second Quintile', 2: 'Third Quintile', 3: 'Fourth Quintile', 4: 'Fifth Quintile'}
-
-        // Add the needed containers:
-        for (var i=1; i<5; i++) {
-            var el = $('div.quintile-outer-container:last')
-            var clone = el.clone();
-            clone.find('span.quintile-title').html('Income Level:  ' + quintHash[i]);
-            clone.insertAfter(el);
-        }
+        var quintileIndex = parseInt(<?php echo $_GET["qidx"]; ?>);
 
         var male;
         var female;
         var summaryTable;
         var sexRatios;
-        var quintiles;
+        quintiles = [];
+
+
+        // the "x" values from the data will go into the ticks array.  
+        // ticks should be strings for this case where we have values like "75+"
+        var ticks = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75+", ""];
+
 
         $.ajax({
             type: "GET",
             dataType: 'json',
             async: false,
-            url: "quintiles.json",
+            url: "ages.json",
             contentType: "application/json",
             success: function (retdata) {
                 // array of arrays of data for each quintile
@@ -251,47 +257,45 @@
                 //  3: ratios
                 quintiles = retdata;
             },
-            error: function (xhr) { console.log(xhr.statusText) }
+            error: function (xhr) { console.log("ERROR: ", xhr.statusText) }
         });
 
         $('td.summary-meanAge').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][0][3]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][3]));
         });
 
         $('td.summary-sexRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][3][0]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][3][0]));
         });
 
         $('td.summary-ageDependencyRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][0][6]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][6]));
         });
 
         $('td.summary-populationTotal').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][0]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][0]));
         });
 
         $('td.summary-populationMale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][1]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][1]));
         });
 
         $('td.summary-populationFemale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][2]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][2]));
         });
         
         // These two variables should be removed outside of the jqplot.com example environment.
         $.jqplot._noToImageButton = true;
         $.jqplot._noCodeBlock = true;
 
-        // the "x" values from the data will go into the ticks array.  
-        // ticks should be strings for this case where we have values like "75+"
-        var ticks = ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85-90", "90-94", "95+"];
-
         // Custom color arrays are set up for each series to get the look that is desired.
         // Two color arrays are created for the default and optional color which the user can pick.
         var greenColors = ["#526D2C", "#77933C", "#C57225", "#C57225"];
         var blueColors = ["#3F7492", "#4F9AB8", "#C57225", "#C57225"];
 
-        // options common to all plots.
+        // To accomodate changing y axis, need to keep track of plot options.
+        // changing axes will require recreating the plot, so need to keep 
+        // track of state changes.
         var plotOptions = {
             // We set up a customized title which acts as labels for the left and right sides of the pyramid.
             title: {
@@ -311,8 +315,8 @@
                     // along the y axis with an adjustable interval.
                     plotBands: {
                         show: true,
-                        interval: 2,
-                        color: 'rgb(250, 240, 225)'
+                        interval: 10,
+                        color: 'rgb(245, 235, 215)'
                     }
                 },
             },
@@ -323,135 +327,12 @@
             seriesDefaults: {
                 renderer: $.jqplot.PyramidRenderer,
                 rendererOptions: {
-                    barPadding: 4,
-                    fill: false
+                    barPadding: 2,
+                    offsetBars: true
                 },
                 yaxis: "yaxis",
-                shadow: false,
-                show: false
+                shadow: false
             },
-
-            // We have 10 series, but only 2 will be shown at a time unless an overlay is turned on.
-            series: [
-                // For pyramid plots, the default side is right.
-                // We want to override here to put first set of bars
-                // on left.
-                {
-                    rendererOptions:{
-                        side: "left"
-                    }
-                },
-                {
-                    yaxis: "y2axis"
-                },
-                {
-                    rendererOptions: {
-                        side: 'left'
-                    }
-                },
-                {
-                    yaxis: 'y2axis'
-                },
-                {
-                    rendererOptions: {
-                        side: 'left'
-                    }
-                },
-                {
-                    yaxis: 'y2axis'
-                },
-                {
-                    rendererOptions: {
-                        side: 'left'
-                    }
-                },
-                {
-                    yaxis: 'y2axis'
-                },
-                {
-                    rendererOptions: {
-                        side: 'left'
-                    }
-                },
-                {
-                    yaxis: 'y2axis'
-                }
-            ],
-            axesDefaults: {
-                tickOptions: {
-                    showGridline: false
-                },
-                pad: 0,
-                rendererOptions: {
-                    baselineWidth: 2
-                }
-            },
-
-            // Set up all the y axes, since users are allowed to switch between them.
-            // The only axis that will show is the one that the series are "attached" to.
-            // We need the appropriate options for the others for when the user switches.
-            axes: {
-                xaxis: {
-                    tickOptions: {
-                        formatter: $.jqplot.PercentTickFormatter,
-                        formatString: '%d%%'
-                    }
-                },
-                yaxis: {
-                    label: "Age",
-                    // Use canvas label renderer to get rotated labels.
-                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                    // include empty tick options, they will be used
-                    // as users set options with plot controls.
-                    tickOptions: {},
-                    showMinorTicks: true,
-                    ticks: ticks,
-                    rendererOptions: {
-                        category: true
-                    }
-                },
-                y2axis: {
-                    label: "Age",
-                    // Use canvas label renderer to get rotated labels.
-                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                    // include empty tick options, they will be used
-                    // as users set options with plot controls.
-                    tickOptions: {},
-                    showMinorTicks: true,
-                    ticks: ticks,
-                    rendererOptions: {
-                        category: true
-                    }
-                }
-            }
-        };
-
-        var serOpts = {show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}};
-        var plotOptsArr = [];
-
-        for (var sidx=0; sidx<10; sidx++;) {
-            var serArr = []  
-        }
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions2 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions3 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions4 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions5 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions6 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
 
             // We have 4 series, the left and right pyramid bars and
             // the left and rigt overlay lines.
@@ -484,8 +365,56 @@
                     }
                 }
             ],
+            axesDefaults: {
+                tickOptions: {
+                    showGridline: false
+                },
+                pad: 0,
+                rendererOptions: {
+                    baselineWidth: 2
+                }
+            },
 
-        $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2]], [quintiles[1][1], quintiles[1][2]], [quintiles[2][1], quintiles[2][2]],[quintiles[3][1], quintiles[3][2]],[quintiles[4][1], quintiles[4][2]],plotOptions);
+            // Set up all the y axes, since users are allowed to switch between them.
+            // The only axis that will show is the one that the series are "attached" to.
+            // We need the appropriate options for the others for when the user switches.
+            axes: {
+                xaxis: {
+                    tickOptions: {
+                        formatter: $.jqplot.PercentTickFormatter,
+                        formatString: '%d%%'
+                    }
+                },
+                yaxis: {
+                    label: "Age",
+                    // Use canvas label renderer to get rotated labels.
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    // include empty tick options, they will be used
+                    // as users set options with plot controls.
+                    tickOptions: {},
+                    showMinorTicks: true,
+                    ticks: ticks,
+                    rendererOptions: {
+                        tickSpacingFactor: 15
+                    }
+                },
+                y2axis: {
+                    label: "Age",
+                    // Use canvas label renderer to get rotated labels.
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    // include empty tick options, they will be used
+                    // as users set options with plot controls.
+                    tickOptions: {},
+                    showMinorTicks: true,
+                    ticks: ticks,
+                    rendererOptions: {
+                        tickSpacingFactor: 15
+                    }
+                }
+            }
+        };
+
+        $('div.jqplot-chart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
 
         // Clear all the check boxes
 
@@ -502,12 +431,12 @@
                 // Here, assume first series is male poulation and second series is female population.
                 // Adjust series indices as appropriate.
                 var plot = $(this).data('jqplot');
-                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[index][0][1];
-                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[index][0][2];
-                var malePopulation = quintiles[index][1][pointIndex] * quintiles[index][0][1];
-                var femalePopulation = quintiles[index][2][pointIndex] * quintiles[index][0][2];
+                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[quintileIndex][0][1];
+                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[quintileIndex][0][2];
+                var malePopulation = quintiles[quintileIndex][1][pointIndex] * quintiles[quintileIndex][0][1];
+                var femalePopulation = quintiles[quintileIndex][2][pointIndex] * quintiles[quintileIndex][0][2];
                 // var ratio = femalePopulation / malePopulation * 100;
-                var ratio = quintiles[index][3][pointIndex+1];
+                var ratio = quintiles[quintileIndex][3][pointIndex+1];
 
                 $(this).closest('table').find('.tooltipMale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", malePopulation));
                 $(this).closest('table').find('.tooltipFemale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", femalePopulation));
@@ -525,66 +454,6 @@
                 // clear out all the tooltips.
                 $(this).closest('table').find(".tooltip-item").fadeOut(250);
             });
-        });
-
-        $('.quintile-toggle').each(function() {
-            $(this).click(function(e) {
-                if ($(this).hasClass('ui-icon-arrowthickstop-1-n')) {
-                    $(this).parent().next('.quintile-content').effect('blind', {mode:'hide'}, 600);
-                    // $('.quintile-content').jqplotEffect('blind', {mode: 'hide'}, 600);
-                    $(this).removeClass('ui-icon-arrowthickstop-1-n');
-                    $(this).addClass('ui-icon-arrowthickstop-1-s');
-                }
-                else if ($(this).hasClass('ui-icon-arrowthickstop-1-s')) {
-                    $(this).parent().next('.quintile-content').effect('blind', {mode:'show'}, 600, function() {
-                        $(this).find('div.jqplot-chart').data('jqplot').replot();
-                    });
-                    // $('.quintile-content').jqplotEffect('blind', {mode: 'show'}, 150);
-                    $(this).removeClass('ui-icon-arrowthickstop-1-s');
-                    $(this).addClass('ui-icon-arrowthickstop-1-n');
-                }
-            });
-        });
-
-        $('input[type=checkbox][name=showContour]').each(function(index) {
-            // on load/reload, clear all the check boxes.
-            $(this).get(0).checked = false;
-
-            $(this).change(function(evt){
-                var copydata = [quintiles[index][1], quintiles[index][2]];
-                var checkBox = this;
-
-                if (this.checked) {
-                    // uncheck all other check boxes.
-                    $('input[type=checkbox][name=showContour]').each(function(cidx) {
-                        if (cidx !== index) {
-                            this.checked = false;
-                        }
-                    });
-
-                    // add data to other plots.
-                    // remove data from this plot.
-                    $('div.jqplot-chart').each(function(pidx) {
-                        var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
-
-                        if (pidx !== index) {
-                            data = data.concat(copydata);
-                        }
-
-                        plot.replot({data: data});
-                    });
-                }
-
-                else {
-                    // remove extra data from plots.
-                    $('div.jqplot-chart').each(function(pidx) {
-                        var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
-                        plot.replot({data: data});
-                    });
-                }
-            })
         });
 
         $('.ui-icon-print').click(function(){
@@ -605,14 +474,6 @@
             });
         });
 
-
-        $('.ui-icon-newwin').each(function(index) {
-            $(this).bind('click', function(evt) {
-                var url = 'kcp_pyramid_by_age.php?qidx='+index;
-                window.open(url);
-            });
-        });
-
         $('div.overlay-chart-container-header div.ui-icon-closethick').click(function(){
             var div = $('div.overlay-chart-container-content');
             div.parent().fadeOut(600);
@@ -626,7 +487,10 @@
 
 <!-- Don't touch this! -->
 
-<?php include "commonScripts.html" ?>
+    <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushXml.min.js"></script>
 
 <!-- End Don't touch this! -->
 
@@ -641,9 +505,16 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.pyramidRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.json2.js"></script>
     <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+    </div>  
+    <script type="text/javascript" src="example.js"></script>
+
+</body>
+
+
+</html>
