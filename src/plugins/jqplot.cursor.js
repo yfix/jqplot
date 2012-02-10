@@ -755,6 +755,7 @@
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
             if (c.showTooltip && !(c._zoom.zooming && c.showTooltipOutsideZoom && !c.constrainOutsideZoom)) {
+                c._tooltipElem.empty();
                 c._tooltipElem.hide();
             }
             if (c.zoom) {
@@ -928,7 +929,7 @@
                 // get zoom starting position.
                 c._zoom.axes.start[ax] = datapos[ax];
             }  
-           if(plot.plugins.jquerymobile){
+           if(plot.plugins.mobile){
                 $(document).bind('vmousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
             } else {
                 $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
