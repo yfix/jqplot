@@ -137,6 +137,7 @@ $(document).ready(function(){
     
     plot1 = $.jqplot("chart1", data, {
         title: "Engel Curves",
+        animate: true,
         axesDefaults: {
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer
         },
@@ -153,6 +154,7 @@ $(document).ready(function(){
             rendererOptions: {
                 // set to true to replot when toggling series on/off
                 // set to an options object to pass in replot options.
+                seriesToggle: 'normal',
                 seriesToggleReplot: {resetAxes: true}
             }
         },
@@ -165,7 +167,7 @@ $(document).ready(function(){
                 }
             },
             yaxis: {
-                label: 'Share in Total Expenditure',
+                label: 'Share in Total Expenditure (%)',
                 tickOptions: {
                     suffix: '%'
                 },
