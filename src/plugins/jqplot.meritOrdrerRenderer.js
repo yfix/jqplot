@@ -70,7 +70,9 @@
         var opts = {lineJoin:'miter', lineCap:'butt', isarc:false, fillRect:this.fillRect, strokeRect:this.strokeRect};
         this.renderer.shapeRenderer.init(opts);
         plot.axes.x2axis._series.push(this);
-        this._type = 'mekko';
+        this._type = 'meritOrder';
+
+        plot.postInitHooks.addOnce(postInit);
     };
     
     // Method: setGridData
@@ -85,23 +87,11 @@
         var data = this._plotData;
         this.gridData = [];
         // figure out width on x axis.
-        // this._xwidth = this._sumy / plot._sumy * this.canvas.getWidth();
-        this._xwidth = xp(this._sumy) - xp(0);
-        if (this.index>0) {
-            this._xstart = plot.series[this.index-1]._xstart + plot.series[this.index-1]._xwidth;
-        }
-        var totheight = this.canvas.getHeight();
-        var sumy = 0;
-        var cury;
-        var curheight;
-        for (var i=0; i<data.length; i++) {
-            if (data[i] != null) {
-                sumy += data[i][1];
-                cury = totheight - (sumy / this._sumy * totheight);
-                curheight = data[i][1] / this._sumy * totheight;
-                this.gridData.push([this._xstart, cury, this._xwidth, curheight]);
-            }
-        }
+        this._xwidth = xp(this._sumx) - xp(this._xstart);
+        data = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
+        this._yhieght = yp(data[0][1]);
+
+        this.gridData.push(xp(data[0][0]), yp(data[0][1]), this._xwidth, this._yheight);
     };
     
     // Method: makeGridData
@@ -113,20 +103,21 @@
     $.jqplot.MeritOrderRenderer.prototype.makeGridData = function(data, plot) {
         // recalculate the grid data
         // figure out width on x axis.
+        // Here going to just reimplement setGridData
+        // since we have to know about data of previous series
+        // It doesn't really make any sense to use arbitrary
+        // data for this type of plot.
         var xp = this._xaxis.series_u2p;
-        var totheight = this.canvas.getHeight();
-        var sumy = 0;
-        var cury;
-        var curheight;
-        var gd = [];
-        for (var i=0; i<data.length; i++) {
-            if (data[i] != null) {
-                sumy += data[i][1];
-                cury = totheight - (sumy / this._sumy * totheight);
-                curheight = data[i][1] / this._sumy * totheight;
-                gd.push([this._xstart, cury, this._xwidth, curheight]);
-            }
-        }
+        var yp = this._yaxis.series_u2p;
+        data = this._plotData;
+        gd = [];
+        // figure out width on x axis.
+        this._xwidth = xp(this._sumx) - xp(this._xstart);
+        data = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
+        this._yhieght = yp(data[0][1]);
+
+        gd.push(xp(data[0][0]), yp(data[0][1]), this._xwidth, this._yheight);
+
         return gd;
     };
     
@@ -180,12 +171,42 @@
         }
         
         if (setopts) {
-            options.axesDefaults.renderer = $.jqplot.MekkoAxisRenderer;
-            options.legend.renderer = $.jqplot.MekkoLegendRenderer;
+            options.axesDefaults.renderer = $.jqplot.MeritOrderAxisRenderer;
+            // options.legend.renderer = $.jqplot.MeritOrderLegendRenderer;
             options.legend.preDraw = true;
         }
     }
     
-    $.jqplot.preInitHooks.push(preInit);
+    $.jqplot.preInitHooks.addOnce(preInit);
+
+    // called with scope of a plot.
+    function postInit(target, data, options) {
+        // go through series and set an ordering parameter on each
+        // order by y value of series data point, lowest to highest.
+        var series = this.series;
+        var s;
+        var order = [];
+        var ymax = 0;
+        for (var i=series.length; i--;) {
+            s = series[i];
+            order.unshift([i, s._sumy]);
+            ymax = Math.max(ymax, s._sumy);
+        }
+
+        order.sort(compare);
+
+        function compare(a, b) {
+            return a[1] - b[1];
+        }
+
+        var xtot = 0;
+
+        for (var i=order.length; i--;) {
+            s = series[order[i][0]];
+            s._meritOrder = i;
+            s._xstart = xtot;
+            xtot += s._sumx;
+        }
+    }
     
 })(jQuery);    

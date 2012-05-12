@@ -667,7 +667,7 @@
     Axis.prototype = new $.jqplot.ElemContainer();
     Axis.prototype.constructor = Axis;
     
-    Axis.prototype.init = function() {
+    Axis.prototype.init = function(plot) {
         if ($.isFunction(this.renderer)) {
             this.renderer = new this.renderer();  
         }
@@ -725,7 +725,7 @@
         else if (this.syncTicks == null){
             this.syncTicks = false;
         }
-        this.renderer.init.call(this, this.rendererOptions);
+        this.renderer.init.call(this, this.rendererOptions, plot);
         
     };
     
@@ -2126,7 +2126,7 @@
                 name = _axisNames[i];
                 axis = this.axes[name];
                 axis._plotDimensions = this._plotDimensions;
-                axis.init();
+                axis.init(this);
                 if (this.axes[name].borderColor == null) {
                     if (name.charAt(0) !== 'x' && axis.useSeriesColor === true && axis.show) {
                         axis.borderColor = axis._series[0].color;
