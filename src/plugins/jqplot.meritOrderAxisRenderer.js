@@ -38,7 +38,7 @@
     };
     
     // called with scope of axis object.
-    $.jqplot.MeritOrderAxisRenderer.prototype.init = function(options){
+    $.jqplot.MeritOrderAxisRenderer.prototype.init = function(options, plot){
         // prop: tickMode
         // How to space the ticks on the axis.
         // 'bar' will place a tick at the width of each bar.  
@@ -63,22 +63,29 @@
         }
         var db = this._dataBounds;
         db.min = 0;
+
+        this._maxSeriesY = 0;
+
+        // first time an axis is called have to
         // for y axes, scale always go from 0 to 1 (0 to 100%)
         if (this.name == 'yaxis' || this.name == 'y2axis') {
             db.max = 100;
             this.tickMode = 'even';
+            for (var i=0; i<this._series.length; i++) {
+                this._maxSeriesY = Math.max(this._maxSeriesY, this._series[i]._sumy);
+            }
         }
-        // For x axes, scale goes from 0 to sum of all y values.
+        // For x axes, scale goes from 0 to sum of all x values.
         else if (this.name == 'xaxis'){
             this.tickMode = (this.tickMode == null) ? 'bar' : this.tickMode;
             for (var i=0; i<this._series.length; i++) {
-                db.max += this._series[i]._sumy;
+                db.max += this._series[i]._sumx;
             }
         }
         else if (this.name == 'x2axis'){
             this.tickMode = (this.tickMode == null) ? 'even' : this.tickMode;
             for (var i=0; i<this._series.length; i++) {
-                db.max += this._series[i]._sumy;
+                db.max += this._series[i]._sumx;
             }
         }
     };
@@ -140,7 +147,7 @@
                     var elem = this._barLabels[i].draw(ctx, plot);
                     elem.removeClass('jqplot-'+this.name+'-label');
                     elem.addClass('jqplot-'+this.name+'-tick');
-                    elem.addClass('jqplot-mekko-barLabel');
+                    elem.addClass('jqplot-meritOrder-barLabel');
                     elem.appendTo(this._elem);
                     elem = null;
                 }   
