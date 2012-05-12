@@ -69,7 +69,7 @@
         // first time an axis is called have to
         // for y axes, scale always go from 0 to 1 (0 to 100%)
         if (this.name == 'yaxis' || this.name == 'y2axis') {
-            db.max = 100;
+            db.max = 1;
             this.tickMode = 'even';
             for (var i=0; i<this._series.length; i++) {
                 this._maxSeriesY = Math.max(this._maxSeriesY, this._series[i]._sumy);
@@ -78,12 +78,6 @@
         // For x axes, scale goes from 0 to sum of all x values.
         else if (this.name == 'xaxis'){
             this.tickMode = (this.tickMode == null) ? 'bar' : this.tickMode;
-            for (var i=0; i<this._series.length; i++) {
-                db.max += this._series[i]._sumx;
-            }
-        }
-        else if (this.name == 'x2axis'){
-            this.tickMode = (this.tickMode == null) ? 'even' : this.tickMode;
             for (var i=0; i<this._series.length; i++) {
                 db.max += this._series[i]._sumx;
             }
@@ -308,7 +302,7 @@
             // yaxis divide ticks in nice intervals from 0 to 1.
             if (this.name == 'yaxis' || this.name == 'y2axis') { 
                 this.min = 0;
-                this.max = 100; 
+                this.max = 1; 
                 // user didn't specify number of ticks.
                 if (!this.numberTicks){
                     if (this.tickInterval) {
@@ -368,77 +362,16 @@
             
             // for x axes, have number ot ticks equal to number of series and ticks placed
             // at sum of y values for each series.
-            else if (this.tickMode == 'bar') {
+            else {
                 this.min = 0;
+                this.max = db.max;
+                this.showTicks = false;
                 this.numberTicks = this._series.length + 1;
                 t = new this.tickRenderer(this.tickOptions);
                 if (!this.showTicks) {
                     t.showLabel = false;
                     t.showMark = false;
                 }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
-                t.setTick(0, this.name);
-                this._ticks.push(t);
-                
-                temp = 0;
-
-                for (i=1; i<this.numberTicks; i++){
-                    temp += this._series[i-1]._sumy;
-                    t = new this.tickRenderer(this.tickOptions);
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    t.setTick(temp, this.name);
-                    this._ticks.push(t);
-                }
-                this.max = this.max || temp;
-                
-                // if user specified a max and it is greater than sum, add a tick
-                if (this.max > temp) {
-                     t = new this.tickRenderer(this.tickOptions);
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    t.setTick(this.max, this.name);
-                    this._ticks.push(t);
-                    
-                }
-            }
-            
-            else if (this.tickMode == 'even') {
-                this.min = 0;
-                this.max = this.max || db.max;
-                // get a desired number of ticks
-                var nt = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                range = this.max - this.min;
-                this.numberTicks = nt;
-                this.tickInterval = range / (this.numberTicks - 1);
-
-                for (i=0; i<this.numberTicks; i++){
-                    tt = this.min + i * this.tickInterval;
-                    t = new this.tickRenderer(this.tickOptions);
-                    // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    t.setTick(tt, this.name);
-                    this._ticks.push(t);
-                }
-                
             }
         }
     };

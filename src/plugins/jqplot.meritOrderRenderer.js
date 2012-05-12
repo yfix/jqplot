@@ -60,7 +60,7 @@
     $.jqplot.MeritOrderRenderer.prototype.init = function(options, plot) {
         this.fill = false;
         this.fillRect = true;
-        this.strokeRect = true;
+        this.strokeRect = false;
         this.shadow = false;
         // width of bar on x axis.
         this._xwidth = 0;
@@ -71,8 +71,6 @@
         this.renderer.shapeRenderer.init(opts);
         plot.axes.x2axis._series.push(this);
         this._type = 'meritOrder';
-
-        plot.postInitHooks.addOnce(postInit);
     };
     
     // Method: setGridData
@@ -87,11 +85,11 @@
         var data = this._plotData;
         this.gridData = [];
         // figure out width on x axis.
-        this._xwidth = xp(this._sumx) - xp(this._xstart);
-        data = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
-        this._yhieght = yp(data[0][1]);
+        this._xwidth = xp(this._sumx);
+        this._plotData = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
+        this._yheight = yp(0) - yp(this._plotData[0][1]);
 
-        this.gridData.push(xp(data[0][0]), yp(data[0][1]), this._xwidth, this._yheight);
+        this.gridData.push([xp(this._plotData[0][0]), yp(this._plotData[0][1]), this._xwidth, this._yheight]);
     };
     
     // Method: makeGridData
@@ -107,18 +105,19 @@
         // since we have to know about data of previous series
         // It doesn't really make any sense to use arbitrary
         // data for this type of plot.
-        var xp = this._xaxis.series_u2p;
-        var yp = this._yaxis.series_u2p;
-        data = this._plotData;
-        gd = [];
-        // figure out width on x axis.
-        this._xwidth = xp(this._sumx) - xp(this._xstart);
-        data = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
-        this._yhieght = yp(data[0][1]);
+        // var xp = this._xaxis.series_u2p;
+        // var yp = this._yaxis.series_u2p;
+        // data = this._plotData;
+        // gd = [];
+        // // figure out width on x axis.
+        // this._xwidth = xp(this._sumx) - xp(this._xstart);
+        // data = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
+        // this._yhieght = yp(data[0][1]);
 
-        gd.push(xp(data[0][0]), yp(data[0][1]), this._xwidth, this._yheight);
+        // gd.push([xp(data[0][0]), yp(data[0][1]), this._xwidth, this._yheight]);
 
-        return gd;
+        // return gd;
+        return this.gridData;
     };
     
 
@@ -176,8 +175,6 @@
             options.legend.preDraw = true;
         }
     }
-    
-    $.jqplot.preInitHooks.addOnce(preInit);
 
     // called with scope of a plot.
     function postInit(target, data, options) {
@@ -189,8 +186,10 @@
         var ymax = 0;
         for (var i=series.length; i--;) {
             s = series[i];
-            order.unshift([i, s._sumy]);
-            ymax = Math.max(ymax, s._sumy);
+            if (s._type === 'meritOrder') {
+                order.unshift([i, s._sumy]);
+                ymax = Math.max(ymax, s._sumy);
+            }
         }
 
         order.sort(compare);
@@ -201,12 +200,16 @@
 
         var xtot = 0;
 
-        for (var i=order.length; i--;) {
+        for (var i=0, l=order.length; i<l; i++) {
             s = series[order[i][0]];
-            s._meritOrder = i;
-            s._xstart = xtot;
-            xtot += s._sumx;
+            if (s._type === 'meritOrder') {
+                s._meritOrder = i;
+                s._xstart = xtot;
+                xtot += s._sumx;
+            }
         }
     }
+    $.jqplot.preInitHooks.push(preInit);
+    $.jqplot.postInitHooks.push(postInit);
     
 })(jQuery);    
