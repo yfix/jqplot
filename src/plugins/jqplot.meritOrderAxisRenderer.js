@@ -59,7 +59,8 @@
         this._barLabels = [];
         $.extend(true, this, options);
         if (this.name == 'yaxis') {
-            this.tickOptions.formatString = this.tickOptions.formatString || "%d\%";
+            this.tickOptions.formatter = $.jqplot.PercentTickFormatter;
+            this.tickOptions.formatString = '%d%%';
         }
         var db = this._dataBounds;
         db.min = 0;
