@@ -89,7 +89,7 @@
         this._plotData = [[this._xstart, this.data[0][1]/this._yaxis._maxSeriesY]];
         this._yheight = yp(0) - yp(this._plotData[0][1]);
 
-        this.gridData.push([xp(this._plotData[0][0]), yp(this._plotData[0][1]), this._xwidth, this._yheight]);
+        this.gridData.push([Math.round(xp(this._plotData[0][0])), Math.round(yp(this._plotData[0][1])), Math.round(this._xwidth), Math.round(this._yheight)]);
     };
     
     // Method: makeGridData
@@ -124,20 +124,12 @@
     // called within scope of series.
     $.jqplot.MeritOrderRenderer.prototype.draw = function(ctx, gd, options) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        var opts = $.extend(true, {}, {fillStyle: this.color}, options);
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
-        var colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
         ctx.save();
         if (gd.length) {
             if (showLine) {
                 for (i=0; i<gd.length; i++){
-                    opts.fillStyle = colorGenerator.next();
-                    if (this.renderer.showBorders) {
-                        opts.strokeStyle = this.renderer.borderColor;
-                    }
-                    else {
-                        opts.strokeStyle = opts.fillStyle;
-                    }
                     this.renderer.shapeRenderer.draw(ctx, gd[i], opts);
                 }
             }
