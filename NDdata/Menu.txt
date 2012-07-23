@@ -95,6 +95,8 @@ Group: API Documentation  {
       File: jqplot.LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
       File: jqplot.MekkoAxisRenderer  (plugins/jqplot.mekkoAxisRenderer.js)
       File: jqplot.MekkoRenderer  (plugins/jqplot.mekkoRenderer.js)
+      File: jqplot.MeritOrderAxisRenderer  (plugins/jqplot.meritOrderAxisRenderer.js)
+      File: jqplot.MeritOrderRenderer  (plugins/jqplot.meritOrderRenderer.js)
       File: jqplot.MeterGaugeRenderer  (plugins/jqplot.meterGaugeRenderer.js)
       File: jqplot.OHLCRenderer  (plugins/jqplot.ohlcRenderer.js)
       File: jqplot.PieRenderer  (plugins/jqplot.pieRenderer.js)
