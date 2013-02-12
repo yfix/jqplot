@@ -5,11 +5,12 @@
  * 
  * About: Version
  * 
- * @VERSION 
+ * version: @VERSION 
+ * revision: @REVISION
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009-2011 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -244,6 +245,7 @@
     };
 
     $.jqplot.version = "@VERSION";
+    $.jqplot.revision = "@REVISION";
 
     $.jqplot.targetCounter = 1;
 
@@ -393,7 +395,7 @@
         return $.jqplot.support_canvas_text.result;
     };
     
-    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
+    $.jqplot.use_excanvas = ((!$.support.boxModel || !$.support.objectAll || !$support.leadingWhitespace) && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -1141,7 +1143,8 @@
      * by the Plot oject.  Series properties can be set or overriden by the 
      * options passed in from the user.
      */
-    function Series() {
+    function Series(options) {
+        options = options || {};
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
         // Properties will be assigned from a series array at the top level of the
@@ -1314,8 +1317,8 @@
         this.index = index;
         this.gridBorderWidth = gridbw;
         var d = this.data;
-        var temp = [], i;
-        for (i=0; i<d.length; i++) {
+        var temp = [], i, l;
+        for (i=0, l=d.length; i<l; i++) {
             if (! this.breakOnNull) {
                 if (d[i] == null || d[i][0] == null || d[i][1] == null) {
                     continue;
@@ -1441,7 +1444,7 @@
             }
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
-            this.renderer.drawShadow.call(this, sctx, gridData, options);
+            this.renderer.drawShadow.call(this, sctx, gridData, options, plot);
         }
         
         for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
@@ -2093,6 +2096,7 @@
             this.legend.init();
             this._sumy = 0;
             this._sumx = 0;
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2105,7 +2109,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2281,6 +2285,7 @@
             this.seriesStack = [];
             this.previousSeriesStack = [];
 
+            this.computePlotData();
             for (var i=0, l=this.series.length; i<l; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2293,7 +2298,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2386,8 +2391,9 @@
             
             this._sumy = 0;
             this._sumx = 0;
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
                     this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
                 }
@@ -2467,6 +2473,81 @@
                
             }
         }
+
+        this.computePlotData = function() {
+            this._plotData = [];
+            this._stackData = [];
+            var series,
+                index,
+                l;
+
+
+            for (index=0, l=this.series.length; index<l; index++) {
+                series = this.series[index];
+                this._plotData.push([]);
+                this._stackData.push([]);
+                var cd = series.data;
+                this._plotData[index] = $.extend(true, [], cd);
+                this._stackData[index] = $.extend(true, [], cd);
+                series._plotData = this._plotData[index];
+                series._stackData = this._stackData[index];
+                var plotValues = {x:[], y:[]};
+
+                if (this.stackSeries && !series.disableStack) {
+                    series._stack = true;
+                    ///////////////////////////
+                    // have to check for nulls
+                    ///////////////////////////
+                    var sidx = (series._stackAxis === 'x') ? 0 : 1;
+
+                    for (var k=0, cdl=cd.length; k<cdl; k++) {
+                        var temp = cd[k][sidx];
+                        if (temp == null) {
+                            temp = 0;
+                        }
+                        this._plotData[index][k][sidx] = temp;
+                        this._stackData[index][k][sidx] = temp;
+
+                        if (index > 0) {
+                            for (var j=index; j--;) {
+                                var prevval = this._plotData[j][k][sidx];
+                                // only need to sum up the stack axis column of data
+                                // and only sum if it is of same sign.
+                                // if previous series isn't same sign, keep looking
+                                // at earlier series untill we find one of same sign.
+                                if (temp * prevval >= 0) {
+                                    this._plotData[index][k][sidx] += prevval;
+                                    this._stackData[index][k][sidx] += prevval;
+                                    break;
+                                } 
+                            }
+                        }
+                    }
+
+                }
+                else {
+                    for (var i=0; i<series.data.length; i++) {
+                        plotValues.x.push(series.data[i][0]);
+                        plotValues.y.push(series.data[i][1]);
+                    }
+                    this._stackData.push(series.data);
+                    this.series[index]._stackData = series.data;
+                    this._plotData.push(series.data);
+                    series._plotData = series.data;
+                    series._plotValues = plotValues;
+                }
+                if (index>0) {
+                    series._prevPlotData = this.series[index-1]._plotData;
+                }
+                series._sumy = 0;
+                series._sumx = 0;
+                for (i=series.data.length-1; i>-1; i--) {
+                    series._sumy += series.data[i][1];
+                    series._sumx += series.data[i][0];
+                }
+            }
+
+        };
         
         // populate the _stackData and _plotData arrays for the plot and the series.
         this.populatePlotData = function(series, index) {
@@ -2478,21 +2559,29 @@
             var plotValues = {x:[], y:[]};
             if (this.stackSeries && !series.disableStack) {
                 series._stack = true;
-                var sidx = series._stackAxis == 'x' ? 0 : 1;
-                var idx = sidx ? 0 : 1;
+                var sidx = (series._stackAxis === 'x') ? 0 : 1;
+                // var idx = sidx ? 0 : 1;
                 // push the current data into stackData
                 //this._stackData.push(this.series[i].data);
                 var temp = $.extend(true, [], series.data);
                 // create the data that will be plotted for this series
                 var plotdata = $.extend(true, [], series.data);
+                var tempx, tempy, dval, stackval, comparator;
                 // for first series, nothing to add to stackData.
                 for (var j=0; j<index; j++) {
                     var cd = this.series[j].data;
                     for (var k=0; k<cd.length; k++) {
-                        temp[k][0] += cd[k][0];
-                        temp[k][1] += cd[k][1];
+                        dval = cd[k];
+                        tempx = (dval[0] != null) ? dval[0] : 0;
+                        tempy = (dval[1] != null) ? dval[1] : 0;
+                        temp[k][0] += tempx;
+                        temp[k][1] += tempy;
+                        stackval = (sidx) ? tempy : tempx;
                         // only need to sum up the stack axis column of data
-                        plotdata[k][sidx] += cd[k][sidx];
+                        // and only sum if it is of same sign.
+                        if (series.data[k][sidx] * stackval >= 0) {
+                            plotdata[k][sidx] += stackval;
+                        }
                     }
                 }
                 for (var i=0; i<plotdata.length; i++) {
@@ -2604,13 +2693,13 @@
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
-                var i;
+                var i, l;
                 dir = dir || 'vertical';
                 if (!$.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
-                    for (i=0; i<data.length; i++) {
+                    for (i=0, l=data.length; i<l; i++) {
                         if (dir == 'vertical') {
                             temp.push([start + i, data[i]]);   
                         }
@@ -2629,17 +2718,23 @@
             var colorIndex = 0;
             this.series = [];
             for (var i=0; i<this.data.length; i++) {
-                var temp = new Series();
+                var sopts = $.extend(true, {index: i}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                // pass in options in case something needs set prior to initialization.
+                var temp = new Series(sopts);
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
                 for (var j=0; j<this.preParseSeriesOptionsHooks.hooks.length; j++) {
                     this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
-                $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                // Now go back and apply the options to the series.  Really should just do this during initializaiton, but don't want to
+                // mess up preParseSeriesOptionsHooks at this point.
+                $.extend(true, temp, sopts);
                 var dir = 'vertical';
-                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal' && temp.transposeData === true) {
+                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
+                    temp._stackAxis = 'x';
+                    temp._primaryAxis = '_yaxis';
                 }
                 temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
@@ -2802,12 +2897,13 @@
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
             }
-            for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
-            }
+            this.computePlotData();
+            // for (var i=0; i<this.series.length; i++) {
+            //     this.populatePlotData(this.series[i], i);
+            // }
             this._sumy = 0;
             this._sumx = 0;
-            for (i=0; i<this.series.length; i++) {
+            for (var i=0, tsl = this.series.length; i<tsl; i++) {
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
             }
