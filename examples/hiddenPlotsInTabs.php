@@ -57,7 +57,7 @@
     </div>
     
     <div id="tabs-2">
-      <p>This plot was in an initially hidden container.  Its hieght and width are set by the "data-height" and "data-width" properties of the plot container.</p>
+      <p>This plot was in an initially hidden container.  Its height and width are set by the "data-height" and "data-width" properties of the plot container.</p>
         <div id="chart1" data-height="260px" data-width="480px" style="margin-top:20px; margin-left:20px;"></div>
     </div>
     
@@ -148,16 +148,16 @@
           series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}]
         });
 
-        $('#tabs').bind('tabsshow', function(event, ui) {
-          if (ui.index === 1 && plot1._drawCount === 0) {
+        $('#tabs').bind('tabsactivate', function(event, ui) {
+          if (ui.newTab.index() === 1 && plot1._drawCount === 0) {
             plot1.replot();
           }
-          else if (ui.index === 2 && plot2._drawCount === 0) {
+          else if (ui.newTab.index() === 2 && plot2._drawCount === 0) {
             plot2.replot();
           }
         });
 
-        $('#accordion').bind('accordionchange', function(event, ui) {
+        $('#accordion').bind('accordionactivate', function(event, ui) {
           var index = $(this).find("h3").index ( ui.newHeader[0] );
           if (index === 1) {
             plot3.replot();
@@ -180,9 +180,9 @@
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.ohlcRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
-  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
+  <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>
