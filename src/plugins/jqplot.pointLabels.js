@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2012 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -155,7 +155,7 @@
             labelIdx = p.seriesLabelIndex;
         }
         else if (this.renderer.constructor === $.jqplot.BarRenderer && this.barDirection === 'horizontal') {
-            labelIdx = 0;
+           labelIdx = (this._plotData[0].length < 3) ? 0 : this._plotData[0].length -1;
         }
         else {
             labelIdx = (this._plotData.length === 0) ? 0 : this._plotData[0].length -1;
