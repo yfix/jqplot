@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2012 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -94,7 +94,7 @@
         this.needleColor = "#C3D3E5";
         // prop: tickColor
         // color of the tick marks around the gauge.
-        this.tickColor = "989898";
+        this.tickColor = "#989898";
         // prop: ringWidth
         // width of the ring around the gauge.  Auto computed by default.
         this.ringWidth = null;
@@ -719,7 +719,7 @@
                     l = this._tickPoints[i][0] - ew * (this._tickPoints[i][2]-Math.PI)/Math.PI - tp * Math.cos(this._tickPoints[i][2]);
                     t = this._tickPoints[i][1] - eh/2 + eh/2 * Math.pow(Math.abs((Math.sin(this._tickPoints[i][2]))), 0.5) + tp/3 * Math.pow(Math.abs((Math.sin(this._tickPoints[i][2]))), 0.5) ;
                     // t = this._tickPoints[i][1] - eh/2 - eh/2 * Math.sin(this._tickPoints[i][2]) - tp/2 * Math.sin(this._tickPoints[i][2]);
-                    elem.css({left:l, top:t});
+                    elem.css({left:l, top:t, color: this.tickColor});
                     dim  = ew*Math.cos(this._tickPoints[i][2]) + eh*Math.sin(Math.PI/2+this._tickPoints[i][2]/2);
                     maxdim = (dim > maxdim) ? dim : maxdim;
                 }
@@ -739,7 +739,7 @@
             
             else if (this.label && this.labelPosition == 'bottom') {
                 var l = this._center[0] + this.canvas._offsets.left - this._labelElem.outerWidth(true)/2;
-                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + + this.ringWidth + this.padding + this.labelHeightAdjust;
+                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + this.ringWidth + this.padding + this.labelHeightAdjust;
                 this._labelElem.css({left:l, top:t});
                 
             }
