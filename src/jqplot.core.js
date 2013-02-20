@@ -10,7 +10,7 @@
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009-2012 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -395,7 +395,7 @@
         return $.jqplot.support_canvas_text.result;
     };
     
-    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
+    $.jqplot.use_excanvas = ((!$.support.boxModel || !$.support.objectAll || !$support.leadingWhitespace) && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -511,7 +511,7 @@
     /**
      * Class: Axis
      * An individual axis object.  Cannot be instantiated directly, but created
-     * by the Plot object.  Axis properties can be set or overriden by the 
+     * by the Plot object.  Axis properties can be set or overridden by the 
      * options passed in from the user.
      * 
      */
@@ -848,7 +848,7 @@
     /**
      * Class: Legend
      * Legend object.  Cannot be instantiated directly, but created
-     * by the Plot object.  Legend properties can be set or overriden by the 
+     * by the Plot object.  Legend properties can be set or overridden by the 
      * options passed in from the user.
      */
     function Legend(options) {
@@ -1077,7 +1077,7 @@
     /**
      * Class: Title
      * Plot Title object.  Cannot be instantiated directly, but created
-     * by the Plot object.  Title properties can be set or overriden by the 
+     * by the Plot object.  Title properties can be set or overridden by the 
      * options passed in from the user.
      * 
      * Parameters:
@@ -1140,7 +1140,7 @@
     /**
      * Class: Series
      * An individual data series object.  Cannot be instantiated directly, but created
-     * by the Plot object.  Series properties can be set or overriden by the 
+     * by the Plot object.  Series properties can be set or overridden by the 
      * options passed in from the user.
      */
     function Series(options) {
@@ -1525,7 +1525,7 @@
      * context is the area bounded by the axes, the area which will contain the series.
      * Note, the series are drawn on their own canvas.
      * The Grid object cannot be instantiated directly, but is created by the Plot object.  
-     * Grid properties can be set or overriden by the options passed in from the user.
+     * Grid properties can be set or overridden by the options passed in from the user.
      */
     function Grid() {
         $.jqplot.ElemContainer.call(this);
@@ -1757,7 +1757,8 @@
         this.data = [];
         // prop: dataRenderer
         // A callable which can be used to preprocess data passed into the plot.
-        // Will be called with 2 arguments, the plot data and a reference to the plot.
+        // Will be called with 3 arguments: the plot data, a reference to the plot,
+        // and the value of dataRendererOptions.
         this.dataRenderer;
         // prop: dataRendererOptions
         // Options that will be passed to the dataRenderer.
@@ -1820,7 +1821,6 @@
         this.legend = new Legend();
         // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
-        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         this.noDataIndicator = {    
             show: false,
             indicator: 'Loading Data...',
@@ -1839,6 +1839,9 @@
                 }
             }
         };
+        // prop: negativeSeriesColors 
+        // colors to use for portions of the line below zero.
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
         this.previousSeriesStack = [];
