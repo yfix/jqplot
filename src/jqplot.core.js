@@ -10,7 +10,7 @@
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009-2011 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -395,7 +395,7 @@
         return $.jqplot.support_canvas_text.result;
     };
     
-    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
+    $.jqplot.use_excanvas = ((!$.support.boxModel || !$.support.objectAll || !$support.leadingWhitespace) && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -511,7 +511,7 @@
     /**
      * Class: Axis
      * An individual axis object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Axis properties can be set or overriden by the 
+     * by the Plot object.  Axis properties can be set or overridden by the 
      * options passed in from the user.
      * 
      */
@@ -848,7 +848,7 @@
     /**
      * Class: Legend
      * Legend object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Legend properties can be set or overriden by the 
+     * by the Plot object.  Legend properties can be set or overridden by the 
      * options passed in from the user.
      */
     function Legend(options) {
@@ -1077,7 +1077,7 @@
     /**
      * Class: Title
      * Plot Title object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Title properties can be set or overriden by the 
+     * by the Plot object.  Title properties can be set or overridden by the 
      * options passed in from the user.
      * 
      * Parameters:
@@ -1091,7 +1091,7 @@
         // text of the title;
         this.text = text;
         // prop: show
-        // wether or not to show the title
+        // whether or not to show the title
         this.show = true;
         // prop: fontFamily
         // css font-family spec for the text.
@@ -1140,10 +1140,11 @@
     /**
      * Class: Series
      * An individual data series object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Series properties can be set or overriden by the 
+     * by the Plot object.  Series properties can be set or overridden by the 
      * options passed in from the user.
      */
-    function Series() {
+    function Series(options) {
+        options = options || {};
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
         // Properties will be assigned from a series array at the top level of the
@@ -1158,7 +1159,7 @@
         // > }
 
         // prop: show
-        // wether or not to draw the series.
+        // whether or not to draw the series.
         this.show = true;
         // prop: xaxis
         // which x axis to use with this series, either 'xaxis' or 'x2axis'.
@@ -1232,16 +1233,16 @@
         // see <$.jqplot.MarkerRenderer>.
         this.markerOptions = {};
         // prop: showLine
-        // wether to actually draw the line or not.  Series will still be renderered, even if no line is drawn.
+        // whether to actually draw the line or not.  Series will still be renderered, even if no line is drawn.
         this.showLine = true;
         // prop: showMarker
-        // wether or not to show the markers at the data points.
+        // whether or not to show the markers at the data points.
         this.showMarker = true;
         // prop: index
         // 0 based index of this series in the plot series array.
         this.index;
         // prop: fill
-        // true or false, wether to fill under lines or in bars.
+        // true or false, whether to fill under lines or in bars.
         // May not be implemented in all renderers.
         this.fill = false;
         // prop: fillColor
@@ -1316,8 +1317,8 @@
         this.index = index;
         this.gridBorderWidth = gridbw;
         var d = this.data;
-        var temp = [], i;
-        for (i=0; i<d.length; i++) {
+        var temp = [], i, l;
+        for (i=0, l=d.length; i<l; i++) {
             if (! this.breakOnNull) {
                 if (d[i] == null || d[i][0] == null || d[i][1] == null) {
                     continue;
@@ -1368,7 +1369,7 @@
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
-        // the markerRenderer is called within it's own scaope, don't want to overwrite series options!!
+        // the markerRenderer is called within its own scope, don't want to overwrite series options!!
         this.markerRenderer.init(this.markerOptions);
     };
     
@@ -1443,7 +1444,7 @@
             }
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
-            this.renderer.drawShadow.call(this, sctx, gridData, options);
+            this.renderer.drawShadow.call(this, sctx, gridData, options, plot);
         }
         
         for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
@@ -1523,15 +1524,15 @@
      * Object representing the grid on which the plot is drawn.  The grid in this
      * context is the area bounded by the axes, the area which will contain the series.
      * Note, the series are drawn on their own canvas.
-     * The Grid object cannot be instantiated directly, but is created by the Plot oject.  
-     * Grid properties can be set or overriden by the options passed in from the user.
+     * The Grid object cannot be instantiated directly, but is created by the Plot object.  
+     * Grid properties can be set or overridden by the options passed in from the user.
      */
     function Grid() {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: drawGridlines
-        // wether to draw the gridlines on the plot.
+        // whether to draw the gridlines on the plot.
         this.drawGridlines = true;
         // prop: gridLineColor
         // color of the grid lines.
@@ -1552,7 +1553,7 @@
         // True to draw border around grid.
         this.drawBorder = true;
         // prop: shadow
-        // wether to show a shadow behind the grid.
+        // whether to show a shadow behind the grid.
         this.shadow = true;
         // prop: shadowAngle
         // shadow angle in degrees
@@ -1740,7 +1741,7 @@
         // animation in these situations can cause problems.
         this.animateReplot = false;
         // prop: axes
-        // up to 4 axes are supported, each with it's own options, 
+        // up to 4 axes are supported, each with its own options, 
         // See <Axis> for axis specific options.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
         this.baseCanvas = new $.jqplot.GenericCanvas();
@@ -1756,7 +1757,8 @@
         this.data = [];
         // prop: dataRenderer
         // A callable which can be used to preprocess data passed into the plot.
-        // Will be called with 2 arguments, the plot data and a reference to the plot.
+        // Will be called with 3 arguments: the plot data, a reference to the plot,
+        // and the value of dataRendererOptions.
         this.dataRenderer;
         // prop: dataRendererOptions
         // Options that will be passed to the dataRenderer.
@@ -1819,7 +1821,6 @@
         this.legend = new Legend();
         // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
-        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         this.noDataIndicator = {    
             show: false,
             indicator: 'Loading Data...',
@@ -1838,16 +1839,19 @@
                 }
             }
         };
+        // prop: negativeSeriesColors 
+        // colors to use for portions of the line below zero.
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
         this.previousSeriesStack = [];
-        // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
+        // Namespace to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
         // prop: series
         // Array of series object options.
         // see <Series> for series specific options.
         this.series = [];
-        // array of series indicies. Keep track of order
+        // array of series indices. Keep track of order
         // which series canvases are displayed, lowest
         // to highest, back to front.
         this.seriesStack = [];
@@ -1859,7 +1863,7 @@
         this.seriesColors = $.jqplot.config.defaultColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
-        // Many bar, stakced and other graphs as well as many plugins depend on
+        // Many bar, stacked and other graphs as well as many plugins depend on
         // having sorted data.
         this.sortData = true;
         // prop: stackSeries
@@ -1886,7 +1890,7 @@
         // Mostly used to test if plot has never been dran (=0), has been successfully drawn
         // into a visible container once (=1) or draw more than once into a visible container.
         // Can use this in tests to see if plot has been visibly drawn at least one time.
-        // After plot has been visibly drawn once, it generally doesn't need redrawn if its
+        // After plot has been visibly drawn once, it generally doesn't need redrawing if its
         // container is hidden and shown.
         this._drawCount = 0;
         // sum of y values for all series in plot.
@@ -2095,6 +2099,7 @@
             this.legend.init();
             this._sumy = 0;
             this._sumx = 0;
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2107,7 +2112,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2283,6 +2288,7 @@
             this.seriesStack = [];
             this.previousSeriesStack = [];
 
+            this.computePlotData();
             for (var i=0, l=this.series.length; i<l; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2295,7 +2301,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2388,8 +2394,9 @@
             
             this._sumy = 0;
             this._sumx = 0;
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
                     this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
                 }
@@ -2469,6 +2476,81 @@
                
             }
         }
+
+        this.computePlotData = function() {
+            this._plotData = [];
+            this._stackData = [];
+            var series,
+                index,
+                l;
+
+
+            for (index=0, l=this.series.length; index<l; index++) {
+                series = this.series[index];
+                this._plotData.push([]);
+                this._stackData.push([]);
+                var cd = series.data;
+                this._plotData[index] = $.extend(true, [], cd);
+                this._stackData[index] = $.extend(true, [], cd);
+                series._plotData = this._plotData[index];
+                series._stackData = this._stackData[index];
+                var plotValues = {x:[], y:[]};
+
+                if (this.stackSeries && !series.disableStack) {
+                    series._stack = true;
+                    ///////////////////////////
+                    // have to check for nulls
+                    ///////////////////////////
+                    var sidx = (series._stackAxis === 'x') ? 0 : 1;
+
+                    for (var k=0, cdl=cd.length; k<cdl; k++) {
+                        var temp = cd[k][sidx];
+                        if (temp == null) {
+                            temp = 0;
+                        }
+                        this._plotData[index][k][sidx] = temp;
+                        this._stackData[index][k][sidx] = temp;
+
+                        if (index > 0) {
+                            for (var j=index; j--;) {
+                                var prevval = this._plotData[j][k][sidx];
+                                // only need to sum up the stack axis column of data
+                                // and only sum if it is of same sign.
+                                // if previous series isn't same sign, keep looking
+                                // at earlier series untill we find one of same sign.
+                                if (temp * prevval >= 0) {
+                                    this._plotData[index][k][sidx] += prevval;
+                                    this._stackData[index][k][sidx] += prevval;
+                                    break;
+                                } 
+                            }
+                        }
+                    }
+
+                }
+                else {
+                    for (var i=0; i<series.data.length; i++) {
+                        plotValues.x.push(series.data[i][0]);
+                        plotValues.y.push(series.data[i][1]);
+                    }
+                    this._stackData.push(series.data);
+                    this.series[index]._stackData = series.data;
+                    this._plotData.push(series.data);
+                    series._plotData = series.data;
+                    series._plotValues = plotValues;
+                }
+                if (index>0) {
+                    series._prevPlotData = this.series[index-1]._plotData;
+                }
+                series._sumy = 0;
+                series._sumx = 0;
+                for (i=series.data.length-1; i>-1; i--) {
+                    series._sumy += series.data[i][1];
+                    series._sumx += series.data[i][0];
+                }
+            }
+
+        };
         
         // populate the _stackData and _plotData arrays for the plot and the series.
         this.populatePlotData = function(series, index) {
@@ -2480,21 +2562,29 @@
             var plotValues = {x:[], y:[]};
             if (this.stackSeries && !series.disableStack) {
                 series._stack = true;
-                var sidx = series._stackAxis == 'x' ? 0 : 1;
-                var idx = sidx ? 0 : 1;
+                var sidx = (series._stackAxis === 'x') ? 0 : 1;
+                // var idx = sidx ? 0 : 1;
                 // push the current data into stackData
                 //this._stackData.push(this.series[i].data);
                 var temp = $.extend(true, [], series.data);
                 // create the data that will be plotted for this series
                 var plotdata = $.extend(true, [], series.data);
+                var tempx, tempy, dval, stackval, comparator;
                 // for first series, nothing to add to stackData.
                 for (var j=0; j<index; j++) {
                     var cd = this.series[j].data;
                     for (var k=0; k<cd.length; k++) {
-                        temp[k][0] += cd[k][0];
-                        temp[k][1] += cd[k][1];
+                        dval = cd[k];
+                        tempx = (dval[0] != null) ? dval[0] : 0;
+                        tempy = (dval[1] != null) ? dval[1] : 0;
+                        temp[k][0] += tempx;
+                        temp[k][1] += tempy;
+                        stackval = (sidx) ? tempy : tempx;
                         // only need to sum up the stack axis column of data
-                        plotdata[k][sidx] += cd[k][sidx];
+                        // and only sum if it is of same sign.
+                        if (series.data[k][sidx] * stackval >= 0) {
+                            plotdata[k][sidx] += stackval;
+                        }
                     }
                 }
                 for (var i=0; i<plotdata.length; i++) {
@@ -2606,13 +2696,13 @@
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
-                var i;
+                var i, l;
                 dir = dir || 'vertical';
                 if (!$.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
-                    for (i=0; i<data.length; i++) {
+                    for (i=0, l=data.length; i<l; i++) {
                         if (dir == 'vertical') {
                             temp.push([start + i, data[i]]);   
                         }
@@ -2631,17 +2721,23 @@
             var colorIndex = 0;
             this.series = [];
             for (var i=0; i<this.data.length; i++) {
-                var temp = new Series();
+                var sopts = $.extend(true, {index: i}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                // pass in options in case something needs set prior to initialization.
+                var temp = new Series(sopts);
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
                 for (var j=0; j<this.preParseSeriesOptionsHooks.hooks.length; j++) {
                     this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
-                $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                // Now go back and apply the options to the series.  Really should just do this during initializaiton, but don't want to
+                // mess up preParseSeriesOptionsHooks at this point.
+                $.extend(true, temp, sopts);
                 var dir = 'vertical';
-                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal' && temp.transposeData === true) {
+                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
+                    temp._stackAxis = 'x';
+                    temp._primaryAxis = '_yaxis';
                 }
                 temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
@@ -2804,12 +2900,13 @@
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
             }
-            for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
-            }
+            this.computePlotData();
+            // for (var i=0; i<this.series.length; i++) {
+            //     this.populatePlotData(this.series[i], i);
+            // }
             this._sumy = 0;
             this._sumx = 0;
-            for (i=0; i<this.series.length; i++) {
+            for (var i=0, tsl = this.series.length; i<tsl; i++) {
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
             }
@@ -2830,7 +2927,7 @@
                 for (i=0, l=$.jqplot.preDrawHooks.length; i<l; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
-                for (i=0, l=this.preDrawHooks.length; i<l; i++) {
+                for (i=0, l=this.preDrawHooks.hooks.length; i<l; i++) {
                     this.preDrawHooks.hooks[i].apply(this, this.preDrawSeriesHooks.args[i]);
                 }
                 // create an underlying canvas to be used for special features.

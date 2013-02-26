@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2011 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -63,7 +63,7 @@
         this.depth = 3;
         this.strokeStyle = 'rgba(0,0,0,0.1)';
         // prop: isarc
-        // wether the shadow is an arc or not.
+        // whether the shadow is an arc or not.
         this.isarc = false;
         
         $.extend(true, this, options);
