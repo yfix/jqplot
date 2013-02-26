@@ -44,7 +44,7 @@
     
     <p>This second chart is like the first except the "varyBlockColors" renderer option is set to true.  This will vary the color of each block in a series separately.  This allows displaying a third dimension to the data such as grouping beverage products by producer and by category such as "cola", "tea", "energy drink", etc.</p>
     
-    <p>Also, the legend has it's "showSwathces" option set to false, since the blocks of each series will be of varying color and won't correspond to one swatch color.  This still enables the user to show and hide the series by clicking on a label in the legend.</p>
+    <p>Also, the legend has its "showSwatches" option set to false, since the blocks of each series will be of varying color and won't correspond to one swatch color.  This still enables the user to show and hide the series by clicking on a label in the legend.</p>
     
     <div id="chart2" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
 
@@ -59,7 +59,7 @@ $(document).ready(function(){
     var s3 = [[1, 59, 'Coca-Cola', {background:'rgb(250, 160, 160)'}], [2, 50, 'Ambasa'], 
     [3, 90, 'Mello Yello'], [4, 90, 'Sprite'], [5, 71, 'Squirt'], [5, 155, 'Youki']];
 
-    var plot1 = $.jqplot('chart1',[s1, s2, s3],{
+    $('#chart1').jqplot([s1, s2, s3],{
         seriesDefaults:{
             renderer:$.jqplot.BlockRenderer
         }, 
@@ -88,6 +88,19 @@ $(document).ready(function(){
         }
     });
 });
+ 
+ function move(dir, val) {
+     var plot1 = $('#chart1').data('jqplot');
+     val = parseFloat(val);
+     var sidx = parseInt($('#seriesId').val());
+     var pidx = parseInt($('#pointId').val());
+     var duration = $('#duration').val();
+     var x = plot1.series[sidx].data[pidx][0];
+     var y = plot1.series[sidx].data[pidx][1];
+     (dir == 'x') ? x += val : y += val; 
+     plot1.series[sidx].moveBlock(pidx, x, y, duration);
+ }
+ 
 </script>
 
 <script class="code" type="text/javascript">
@@ -130,17 +143,6 @@ $(document).ready(function(){
    
  });
  
- function move(dir, val) {
-     val = parseFloat(val);
-     var sidx = parseInt($('#seriesId').val());
-     var pidx = parseInt($('#pointId').val());
-     var duration = $('#duration').val();
-     var x = plot1.series[sidx].data[pidx][0];
-     var y = plot1.series[sidx].data[pidx][1];
-     (dir == 'x') ? x += val : y += val; 
-     plot1.series[sidx].moveBlock(pidx, x, y, duration);
- }
- 
 </script>
 
 <!-- End example scripts -->
@@ -157,4 +159,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>
