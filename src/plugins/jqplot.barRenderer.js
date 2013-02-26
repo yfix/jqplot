@@ -115,7 +115,7 @@
         
         //////
         // This is probably wrong here.
-        // After going back and forth on wether renderer should be the thing
+        // After going back and forth on whether renderer should be the thing
         // or extend the thing, it seems that it it best if it is a property
         // on the thing.  This should be something that is commonized 
         // among series renderers in the future.
@@ -513,7 +513,7 @@
                             xstart = 0;
                         }
                     }
-                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
+                    if ((this.fillToZero && this._plotData[i][0] < 0) || (this.waterfall && this._data[i][0] < 0)) {
                         if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
@@ -521,6 +521,9 @@
                             else {
                                 opts.fillStyle = positiveColors.next();
                             }
+                        }
+                        else {
+                            opts.fillStyle = negativeColor;
                         }
                     }
                     else {
@@ -794,4 +797,4 @@
     }
     
     
-})(jQuery);    
+})(jQuery);

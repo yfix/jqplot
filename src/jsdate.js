@@ -26,7 +26,7 @@
      * under both the MIT and GPL version 2.0 licenses. This means that you can 
      * choose the license that best suits your project and use it accordingly.
      * 
-     * <p>Ken's origianl Date Instance Methods and copyright notice:</p>
+     * <p>Ken's original Date Instance Methods and copyright notice:</p>
      * <pre>
      * Ken Snyder (ken d snyder at gmail dot com)
      * 2008-09-10
@@ -314,7 +314,7 @@
     
     jsDate.prototype.getIsoWeek = function() {
         var d = this.proxy;
-        var woy = d.getWeekOfYear();
+        var woy = this.getWeekOfYear();
         var dow1_1 = (new Date('' + d.getFullYear() + '/1/1')).getDay();
         // First week is 01 and not 00 as in the case of %U and %W,
         // so we add 1 to the final result except if day 1 of the year
@@ -716,7 +716,7 @@
             dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
             dayNamesShort: ['Ni', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
             formatString: '%Y-%m-%d %H:%M:%S'
-        },
+        }
     
     };
     

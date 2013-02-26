@@ -33,7 +33,7 @@
      * Class: $.jqplot.DateAxisRenderer
      * A plugin for a jqPlot to render an axis as a series of date values.
      * This renderer has no options beyond those supplied by the <Axis> class.
-     * It supplies it's own tick formatter, so the tickOptions.formatter option
+     * It supplies its own tick formatter, so the tickOptions.formatter option
      * should not be overridden.
      * 
      * Thanks to Ken Synder for his enhanced Date instance methods which are
@@ -361,8 +361,8 @@
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
-        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
-        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+        min = new $.jsDate((this.min != null) ? this.min : db.min).getTime();
+        max = new $.jsDate((this.max != null) ? this.max : db.max).getTime();
 
         // see if we're zooming.  if we are, don't use the min and max we're given,
         // but compute some nice ones.  They will be reset later.

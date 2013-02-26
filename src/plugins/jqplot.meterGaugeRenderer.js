@@ -358,7 +358,7 @@
         
         
             
-        // pre-draw so can get it's dimensions.
+        // pre-draw so can get its dimensions.
         if (this.label) {
             this._labelElem = $('<div class="jqplot-meterGauge-label" style="position:absolute;">'+this.label+'</div>');
             this.canvas._elem.after(this._labelElem);
@@ -739,7 +739,7 @@
             
             else if (this.label && this.labelPosition == 'bottom') {
                 var l = this._center[0] + this.canvas._offsets.left - this._labelElem.outerWidth(true)/2;
-                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + + this.ringWidth + this.padding + this.labelHeightAdjust;
+                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + this.ringWidth + this.padding + this.labelHeightAdjust;
                 this._labelElem.css({left:l, top:t});
                 
             }
