@@ -18,7 +18,7 @@ $(document).ready(function(){
     $('#chart1').jqplot([line1], {
         title:'Default Bar Chart',
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer,
+            renderer:$.jqplot.BarRenderer
         },
         axes:{
             xaxis:{
@@ -91,4 +91,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

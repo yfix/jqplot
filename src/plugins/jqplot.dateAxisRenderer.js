@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2011 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -33,7 +33,7 @@
      * Class: $.jqplot.DateAxisRenderer
      * A plugin for a jqPlot to render an axis as a series of date values.
      * This renderer has no options beyond those supplied by the <Axis> class.
-     * It supplies it's own tick formatter, so the tickOptions.formatter option
+     * It supplies its own tick formatter, so the tickOptions.formatter option
      * should not be overridden.
      * 
      * Thanks to Ken Synder for his enhanced Date instance methods which are
@@ -340,8 +340,8 @@
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
-        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
-        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+        min = new $.jsDate((this.min != null) ? this.min : db.min).getTime();
+        max = new $.jsDate((this.max != null) ? this.max : db.max).getTime();
 
         // see if we're zooming.  if we are, don't use the min and max we're given,
         // but compute some nice ones.  They will be reset later.
@@ -482,7 +482,7 @@
 
                 min = Math.floor(min/tempti) * tempti;
                 min = new $.jsDate(min);
-                min = min.getTime() + min.getUtcOffset();
+                min = min.getTime();
 
                 nttarget = Math.ceil((max - min) / tempti) + 1;
                 this.min = min;

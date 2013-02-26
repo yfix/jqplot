@@ -67,7 +67,7 @@
 </div>
 </td>
 <td>
-<p>The second plot uses an alternative sizing method that is more responsive in all browsers, especially IE.  The differnece?  First, the plot target is given a static height and width that will fit inside the resizable container.  Then, instead of resizing dynamically with the container, the plots replot() method is called at the end of the resize.  When resizing is done, the plot targets hieght and width are set to a percentage of the container's and then the replot method is called.</p>
+<p>The second plot uses an alternative sizing method that is more responsive in all browsers, especially IE.  The difference?  First, the plot target is given a static height and width that will fit inside the resizable container.  Then, instead of resizing dynamically with the container, the plots replot() method is called at the end of the resize.  When resizing is done, the plot targets height and width are set to a percentage of the container's and then the replot method is called.</p>
 
 <p>Also, an options object is passed into the replot method.  It contains a single option, resetAxes, which, if true, resets all axes so the min, max, numberTicks and tickInterval are recalculated.</p>
 <pre>
@@ -148,12 +148,12 @@
 
 <!-- Additional plugins go here -->
 
-  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   
-  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
-  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
+  <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>
