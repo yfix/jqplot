@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2011 Chris Leonello
+ * Copyright (c) 2009-2013 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -101,7 +101,7 @@
         // null will compute ringMargin based on sliceMargin.
         this.ringMargin = null;
         // prop: fill
-        // true or false, wether to fil the slices.
+        // true or false, whether to fil the slices.
         this.fill = true;
         // prop: shadowOffset
         // offset of the shadow from the slice and offset of 

@@ -21,12 +21,12 @@
      * @author Chris Leonello
      * @date #date#
      * @version #VERSION#
-     * @copyright (c) 2010 Chris Leonello
+     * @copyright (c) 2010-2013 Chris Leonello
      * jsDate is currently available for use in all personal or commercial projects 
      * under both the MIT and GPL version 2.0 licenses. This means that you can 
      * choose the license that best suits your project and use it accordingly.
      * 
-     * <p>Ken's origianl Date Instance Methods and copyright notice:</p>
+     * <p>Ken's original Date Instance Methods and copyright notice:</p>
      * <pre>
      * Ken Snyder (ken d snyder at gmail dot com)
      * 2008-09-10
@@ -314,7 +314,7 @@
     
     jsDate.prototype.getIsoWeek = function() {
         var d = this.proxy;
-        var woy = d.getWeekOfYear();
+        var woy = this.getWeekOfYear();
         var dow1_1 = (new Date('' + d.getFullYear() + '/1/1')).getDay();
         // First week is 01 and not 00 as in the case of %U and %W,
         // so we add 1 to the final result except if day 1 of the year
@@ -708,8 +708,15 @@
             dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
             dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
             formatString: '%Y-%m-%d %H:%M:%S'
-        }
+        },
         
+        'pl': {
+            monthNames: ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],
+            monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze','Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
+            dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+            dayNamesShort: ['Ni', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        }
     
     };
     
