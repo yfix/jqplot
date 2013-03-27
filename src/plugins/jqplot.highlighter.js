@@ -44,7 +44,7 @@
      * To disable the tooltip, set "showTooltip" to false.
      * 
      * You can control what data is displayed in the tooltip with various
-     * options.  The "tooltipAxes" option controls wether the x, y or both
+     * options.  The "tooltipAxes" option controls whether the x, y or both
      * data values are displayed.
      * 
      * Some chart types (e.g. hi-low-close) have more than one y value per
@@ -339,12 +339,12 @@
         if (series.markerRenderer.show == true) { 
             ms = (series.markerRenderer.size + opts.sizeAdjust)/2;
         }
-		
-		var loc = locations;
-		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
-			loc = oppositeLocations;
-		}
-		
+
+        var loc = locations;
+        if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+          loc = oppositeLocations;
+        }
+
         switch (loc[locationIndicies[opts.tooltipLocation]]) {
             case 'nw':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;

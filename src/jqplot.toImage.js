@@ -40,7 +40,7 @@
  * Ken has generously given permission to adapt his code and release
  * under the MIT and GPL V2 licenses.
  * 
- * Ken's origianl Date Instance Methods and copyright notice:
+ * Ken's original Date Instance Methods and copyright notice:
  * 
  * Ken Snyder (ken d snyder at gmail dot com)
  * 2008-09-10
@@ -329,7 +329,7 @@
         return str;
     };
 
-    // Not gauranteed to work, even on canvas supporting browsers due to 
+    // Not guaranteed to work, even on canvas supporting browsers due to 
     // limitations with location.href and browser support.
     $.fn.jqplotSaveImage = function() {
         var imgData = $(this).jqplotToImageStr({});
@@ -339,7 +339,7 @@
 
     };
 
-    // Not gauranteed to work, even on canvas supporting browsers due to
+    // Not guaranteed to work, even on canvas supporting browsers due to
     // limitations with window.open and arbitrary data.
     $.fn.jqplotViewImage = function() {
         var imgStr = $(this).jqplotToImageElemStr({});

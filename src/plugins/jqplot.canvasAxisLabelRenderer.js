@@ -52,10 +52,10 @@
         // name of the axis associated with this tick
         this.axis;
         // prop: show
-        // wether or not to show the tick (mark and label).
+        // whether or not to show the tick (mark and label).
         this.show = true;
         // prop: showLabel
-        // wether or not to show the label.
+        // whether or not to show the label.
         this.showLabel = true;
         // prop: label
         // label for the axis.
@@ -186,8 +186,8 @@
         elem.style.width = w;
         elem.style.height = h;
         
-		elem = plot.canvasManager.initCanvas(elem);
-		
+        elem = plot.canvasManager.initCanvas(elem);
+
         this._elem = $(elem);
         this._elem.css({ position: 'absolute'});
         this._elem.addClass('jqplot-'+this.axis+'-label');

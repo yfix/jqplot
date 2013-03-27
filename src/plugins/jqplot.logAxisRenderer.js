@@ -161,10 +161,10 @@
             
             // perform some checks
             if (this.min != null && this.min <= 0) {
-                throw('log axis minimum must be greater than 0');
+                throw new Error("Log axis minimum must be greater than 0");
             }
             if (this.max != null && this.max <= 0) {
-                throw('log axis maximum must be greater than 0');
+                throw new Error("Log axis maximum must be greater than 0");
             }
 
             function findCeil (val) {
@@ -191,6 +191,11 @@
             //     rmin = rmin*(1-adj);
             //     rmax = rmax*(1+adj);
             // }
+
+            // Handle case where a data value was zero
+            if (rmin === 0) {
+              rmin = 1;
+            }
 
             var order = Math.round(Math.log(rmin)/Math.LN10);
 

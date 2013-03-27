@@ -42,7 +42,7 @@
         this.style = 'crosshair';
         this.previousCursor = 'auto';
         // prop: show
-        // wether to show the cursor or not.
+        // whether to show the cursor or not.
         this.show = $.jqplot.config.enablePlugins;
         // prop: showTooltip
         // show a cursor position tooltip.  Location of the tooltip
@@ -654,7 +654,7 @@
             
         elem.css('left', x);
         elem.css('top', y);
-	    elem = null;
+        elem = null;
     }
     
     function positionTooltip(plot) { 
@@ -1048,7 +1048,7 @@
         if (this.show) {
             var series = this._series, s;
             // make a table.  one line label per row.
-            var elem = document.createElement('div');
+            var elem = document.createElement('table');
             this._elem = $(elem);
             elem = null;
             this._elem.addClass('jqplot-legend jqplot-cursor-legend');
