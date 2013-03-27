@@ -1966,7 +1966,7 @@
             // remove any error class that may be stuck on target.
             this.target.removeClass('jqplot-error');
             if (!this.target.get(0)) {
-                throw "No plot target specified";
+                throw new Error("No plot target specified");
             }
             
             // make sure the target is positioned by some means and set css
@@ -2025,7 +2025,7 @@
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw "Canvas dimension not set";
+                throw new Error("Canvas dimension not set");
             }
             
             if (options.dataRenderer && $.isFunction(options.dataRenderer)) {
@@ -2043,7 +2043,7 @@
             if (data == null || $.isArray(data) == false || data.length == 0 || $.isArray(data[0]) == false || data[0].length == 0) {
                 
                 if (this.noDataIndicator.show == false) {
-                    throw "No Data";
+                    throw new Error("No data specified");
                 }
                 
                 else {
@@ -2208,7 +2208,7 @@
             this._width = this.target.width();
             
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw "Target dimension not set";
+                throw new Error("Target dimension not set");
             }
             
             this._plotDimensions.height = this._height;
@@ -2364,7 +2364,7 @@
             this._width = this.target.width();
             
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw "Target dimension not set";
+                throw new Error("Target dimension not set");
             }
             
             this._plotDimensions.height = this._height;
@@ -3299,7 +3299,7 @@
                                 minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
                                 maxang = s.gridData[j][1];
                                 if (theta > minang && theta < maxang) {
-                                    return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
+                                    return {seriesIndex:s.index, pointIndex:j, gridData:[gridpos.x,gridpos.y], data:s.data[j]};
                                 }
                             }
                         }
@@ -3344,7 +3344,7 @@
                                 minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
                                 maxang = s.gridData[j][1];
                                 if (theta > minang && theta < maxang) {
-                                    return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
+                                    return {seriesIndex:s.index, pointIndex:j, gridData:[gridpos.x,gridpos.y], data:s.data[j]};
                                 }
                             }
                         }
@@ -3909,7 +3909,7 @@
             return $.jqplot.hex2rgb(s, a);
         }
         else {
-            throw 'invalid color spec';
+            throw new Error('Invalid color spec');
         }
     };
     
